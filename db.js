@@ -52,8 +52,32 @@ class DatabaseConnection {
     `;
 
     this.run(createTableQuery)
-      .then(() => console.log("'orders' table checked/created successfully."))
+      .then(() => {
+        console.log("'orders' table checked/created successfully.");
+        this.seedIfEmpty();
+      })
       .catch((err) => console.error('Error creating orders table:', err.message));
+  }
+
+  async seedIfEmpty() {
+    try {
+      const row = await this.get('SELECT COUNT(*) AS count FROM orders');
+      if (row && row.count === 0) {
+        console.log('Seeding initial mock data into empty database...');
+        const seedQueries = [
+          `INSERT INTO orders (customer_name, product_name, status, updated_at) VALUES ('Liam Neeson', 'MacBook Pro M4', 'shipped', datetime('now', 'localtime', '-15 minutes'))`,
+          `INSERT INTO orders (customer_name, product_name, status, updated_at) VALUES ('Olivia Dunham', 'Sony WH-1000XM5', 'pending', datetime('now', 'localtime', '-10 minutes'))`,
+          `INSERT INTO orders (customer_name, product_name, status, updated_at) VALUES ('Emma Watson', 'iPad Pro 11"', 'delivered', datetime('now', 'localtime', '-5 minutes'))`,
+          `INSERT INTO orders (customer_name, product_name, status, updated_at) VALUES ('Oliver Queen', 'Keychron Q1 Keyboard', 'pending', datetime('now', 'localtime'))`
+        ];
+        for (const query of seedQueries) {
+          await this.run(query);
+        }
+        console.log('Database seeded successfully with initial orders.');
+      }
+    } catch (err) {
+      console.error('Error seeding database:', err.message);
+    }
   }
 
   // Promise wrapper for db.run
