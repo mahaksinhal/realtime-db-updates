@@ -2,11 +2,18 @@ import sqlite3 from 'sqlite3';
 import { EventEmitter } from 'events';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DB_FILE = path.join(__dirname, 'orders.db');
+// Support persistent cloud disk volumes (e.g. Render / Fly.io / Railway)
+const DB_DIR = process.env.DATA_DIR || __dirname;
+if (!fs.existsSync(DB_DIR)) {
+  fs.mkdirSync(DB_DIR, { recursive: true });
+}
+
+const DB_FILE = path.join(DB_DIR, 'orders.db');
 
 // Enable verbose mode for better debugging logs
 const sqlite = sqlite3.verbose();
