@@ -1,4 +1,5 @@
 # ApexSync: Real-Time Database Update Propagation System
+deployed link : https://realtime-db-updates.onrender.com
 
 This repository contains a high-performance, real-time database update propagation system that streams database modifications (`INSERT`, `UPDATE`, `DELETE` operations on an `orders` table) directly to connected clients in real-time, without relying on client-side polling.
 
